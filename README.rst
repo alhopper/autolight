@@ -105,13 +105,17 @@ Both these sevice providers are **awesome**.  You may be able to stay within the
 
 **PaperTrail** `On-line Logging Service <https://papertrailapp.com/>`_
 
-.. _image1: https://bitbucket.org/alhopper2/autolight/raw/default/autolight/doc/images/autolight-papertrail-grab.png
+Here is a sample logging output |LOG|
+
+.. |LOG| image:: /raw/default/autolight/doc/images/autolight-papertrail-grab.png
 
 Open the image in a new tab to get a better view.
 
 **Librato** `On-line real-time dashboard/plotting service <https://metrics.librato.com/>`_
 
-.. _image2: https://bitbucket.org/alhopper2/autolight/raw/default/autolight/doc/images/autolight-librato-grab.png
+Here is a sample of the activity output plot |PLOT|jj
+
+.. |PLOT| image:: https://bitbucket.org/alhopper2/autolight/raw/default/autolight/doc/images/autolight-librato-grab.png
 
 Open the image in a new tab to get a better view.
 
