@@ -107,7 +107,7 @@ Both these sevice providers are **awesome**.  You may be able to stay within the
 
 Here is a sample logging output |LOG|
 
-.. |LOG| image:: /raw/default/autolight/doc/images/autolight-papertrail-grab.png
+.. |LOG| image:: autolight/doc/images/autolight-papertrail-grab.png
 
 Open the image in a new tab to get a better view.
 
@@ -115,7 +115,7 @@ Open the image in a new tab to get a better view.
 
 Here is a sample of the activity output plot |PLOT|jj
 
-.. |PLOT| image:: https://bitbucket.org/alhopper2/autolight/raw/default/autolight/doc/images/autolight-librato-grab.png
+.. |PLOT| image:: /doc/images/autolight-librato-grab.png
 
 Open the image in a new tab to get a better view.
 
