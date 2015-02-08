@@ -101,7 +101,7 @@ test in the test subdirectory.  Execute the following standalones and *eyeball* 
 
 Recommended On-line Services
 ----------------------------
-Both these sevice provides are **awesome**.  You may be able to stay within the *free* usage limits if you're just using them for this project.  But you will quickly start using them for many other projects!!  ;-)
+Both these sevice providers are **awesome**.  You may be able to stay within the *free* usage limits if you're just using them for this project.  But you will quickly start using them for many other projects!!  ;-)
 
 **PaperTrail** `On-line Logging Service <https://papertrailapp.com/>`_
 
