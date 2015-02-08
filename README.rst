@@ -109,15 +109,11 @@ Here is a sample logging output |LOG|
 
 .. |LOG| image:: autolight/doc/images/autolight-papertrail-grab.png
 
-Open the image in a new tab to get a better view.
-
 **Librato** `On-line real-time dashboard/plotting service <https://metrics.librato.com/>`_
 
 Here is a sample of the activity output plot |PLOT|
 
 .. |PLOT| image:: autolight/doc/images/autolight-librato-grab.png
-
-Open the image in a new tab to get a better view.
 
 ------------
 
