@@ -94,9 +94,10 @@ The codebase is small and simple and while there is never an excuse for a lack o
 testing, the only test that seems necessary, is one to establish the basic accuracy of the
 Sunrise/Sunset calculations.  To validate the calculations, you'll find an *"eyeball"* (sorry)
 test in the test subdirectory.  Execute the following standalones and *eyeball* the results:
+::
 
-* test/sunrisesunset-ephem.py
-* test/sunrisesunset-usno.py
+  test/sunrisesunset-ephem.py
+  test/sunrisesunset-usno.py
 
 
 Recommended On-line Services
