@@ -87,6 +87,21 @@ Recommended Parts List
 * Appropriate fuse and fuse holder (Radio Shack or your local hardware store)
 * Appropriate (plastic) box
 
+Software Installation
+---------------------
+
+Autolight runs on any Python 2.7.n version of Python.  Please install pip to manage the installation of python dependencies.  Note: there are many internet resources to describe how-to intall pip.
+
+Installing Autolight is as simple as (running):
+
+* git clone git@github.com:alhopper/autolight.git
+
+Autolight requires the installation of some python library/module dependendies.  Install them as follows:
+
+* sudo pip install ephem
+* sudo pip install librato-metrics
+* sudo pip install apscheduler==2.1.2
+
 Validation and Testing
 ----------------------
 
