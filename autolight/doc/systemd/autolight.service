@@ -4,13 +4,14 @@ Description=Start Autolight LED security light
 After=ssh.service
 
 [Service]
+EnvironmentFile=/home/al/autolight/environment.file
 ExecStart=/home/al/autolight/securitylight.py
 Restart=always
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=autolight
 User=al
-Group=dialout
+Group=al
 
 [Install]
 WantedBy=multi-user.target
