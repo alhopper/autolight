@@ -26,8 +26,6 @@ def log_inet_address(log):
     proc = subprocess.Popen(['/sbin/ifconfig', '-a'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     ifconfig_lines = proc.communicate()[0].splitlines()
     for line in ifconfig_lines:
-        print('line:', line)
-        # line=str(line)
         if (line.find(b'inet ') > 0) and (line.find(b'127.0.0') < 0):
             icu  = re.search(r'(^\s+inet )(\d+\.\d+\.\d+\.\d+)', line.decode())
             log.info('RPi ethernet address: {}'.format(icu.group(2)))
@@ -108,7 +106,8 @@ def call_turn_on_ssr(log):
     '''
     log.info('Turn ON LedStrip')
     os.system('sudo  chmod o+rw /dev/ttyACM0')
-    os.system('sudo -b nohup /home/al/bin/colorfill.py >/dev/null 2>&1 ')
+    # ?? $HOME/AUTOLIGHTINST
+    os.system('sudo -b nohup /home/al/autolight/bin/colorfill8806.py >/dev/null 2>&1 ')
 
 
 def call_turn_off_ssr(log):
@@ -117,7 +116,8 @@ def call_turn_off_ssr(log):
     '''
     log.info('Turn Off LedStrip')
     os.system('sudo  chmod o+rw /dev/ttyACM0')
-    os.system('/home/al/bin/turnoffledstrip.sh')
+    # ?? $HOME/AUTOLIGHTINST
+    os.system('/home/al/autolight/bin/turnoffledstrip.sh')
 
 
 def set_current_state(log):
