@@ -1,6 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-from apscheduler.scheduler import Scheduler
+from apscheduler.schedulers.background import BackgroundScheduler
+
 
 def get(refresh=False):
     '''
@@ -13,7 +14,7 @@ def get(refresh=False):
     if get.sched:
         return get.sched
     # create a scheduler
-    get.sched = Scheduler(coalesce=True)
+    get.sched = BackgroundScheduler(coalesce=True)
     # start it
     get.sched.start()
     return get.sched

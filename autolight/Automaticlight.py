@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import datetime
 import os
@@ -11,7 +11,7 @@ import subprocess
 
 import ephem
 import librato
-import Sched
+import autolight.Sched
 
 # pylint: disable=C0301
 # pylint: disable=C0103
@@ -26,8 +26,10 @@ def log_inet_address(log):
     proc = subprocess.Popen(['/sbin/ifconfig', '-a'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     ifconfig_lines = proc.communicate()[0].splitlines()
     for line in ifconfig_lines:
-        if (line.find('inet addr') > 0) and (line.find('127.0.0') < 0):
-            icu  = re.search(r'(^\s+inet addr:)(\d+\.\d+\.\d+\.\d+)', line)
+        print('line:', line)
+        # line=str(line)
+        if (line.find(b'inet ') > 0) and (line.find(b'127.0.0') < 0):
+            icu  = re.search(r'(^\s+inet )(\d+\.\d+\.\d+\.\d+)', line.decode())
             log.info('RPi ethernet address: {}'.format(icu.group(2)))
 
 
@@ -57,8 +59,7 @@ def get_load_level():
         Get the average load level for the last 1 minute (3rd last field)
     '''
     proc = subprocess.Popen(['/usr/bin/uptime'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    uptime = proc.communicate()[0].strip()
-    return uptime.translate(None, ',').split()[-3]
+    return (proc.communicate()[0].strip()).split()[-3].replace(b',', b'').decode()
 
 
 def get_hostname():
@@ -66,8 +67,8 @@ def get_hostname():
         Get the RPi hostname
     '''
     result = subprocess.Popen(['/bin/hostname'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    hostname = result.communicate()[0].rstrip('\n')
-    return hostname
+    return result.communicate()[0].replace(b'\n',b'').decode()
+
 
 def heartbeat(libratoapi):
     '''
@@ -78,6 +79,8 @@ def heartbeat(libratoapi):
     '''
     loadlevel = get_load_level()
     hostname = get_hostname()
+    print('loadlevel:', loadlevel)
+    print('hostname:', hostname)
     try:
         libratoapi.submit(hostname, float(loadlevel), description=hostname)
     except Exception as e:
@@ -101,20 +104,20 @@ def calc_sunrise_sunset(log):
 
 def call_turn_on_ssr(log):
     '''
-        Unfortunately, the GPIO control code must run set UID as root.
-        The cleanest (secure) solution is to use a standalone setuid
-        root executable and then exec it.
+        Turn on the LedStrip by calling colorfill.py and run it in the background
     '''
-    log.info('Turn ON SSR')
-    os.system('sudo /home/pi/autolight/autolight/turnonssr.py')
+    log.info('Turn ON LedStrip')
+    os.system('sudo  chmod o+rw /dev/ttyACM0')
+    os.system('sudo -b nohup /home/al/bin/colorfill.py >/dev/null 2>&1 ')
 
 
 def call_turn_off_ssr(log):
     '''
-        Turn off the Solid State Relay
+        Turn off the Led Strip
     '''
-    log.info('Turn Off SSR')
-    os.system('sudo /home/pi/autolight/autolight/turnoffssr.py')
+    log.info('Turn Off LedStrip')
+    os.system('sudo  chmod o+rw /dev/ttyACM0')
+    os.system('/home/al/bin/turnoffledstrip.sh')
 
 
 def set_current_state(log):
@@ -156,11 +159,11 @@ def schedule_next_cycle(log):
         back online.  Note: duplicate scheduler entries are avoided.
     '''
     sunrise, sunset = calc_sunrise_sunset(log)
-    sched = Sched.get()
+    sched = autolight.Sched.get()
     if not job_already_scheduled(sunrise):
-        sched.add_date_job(call_turn_off_ssr, sunrise, [log])
+        sched.add_job(call_turn_off_ssr, 'date', run_date=sunrise, args=[log])
     if not job_already_scheduled(sunset):
-        sched.add_date_job(call_turn_on_ssr, sunset, [log])
+        sched.add_job(call_turn_on_ssr, 'date', run_date=sunset, args=[log])
     log_scheduled_jobs(log)
 
 
@@ -168,10 +171,10 @@ def job_already_scheduled(jobtime):
     '''
         Determine if a job is already scheduled
     '''
-    jobs = Sched.get().get_jobs()
+    jobs = autolight.Sched.get().get_jobs()
     found = False
     for job in jobs:
-        pos = string.find(str(job), str(jobtime))
+        pos = str.find(str(job), str(jobtime))
         if pos >= 0:
             found = True
             break
@@ -179,7 +182,7 @@ def job_already_scheduled(jobtime):
 
 
 def log_scheduled_jobs(log):
-    jobs = Sched.get().get_jobs()
+    jobs = autolight.Sched.get().get_jobs()
     for job in jobs:
         log.info('Job %s' % str(job))
 
@@ -190,7 +193,7 @@ def display_scheduled_jobs(log):
         on or off.  So, display the scheduler Q on the following, cron style, schedule.
     '''
     crontimes = '7,19,20'
-    Sched.get().add_cron_job(log_scheduled_jobs, hour=crontimes, minute=3, args=[log])
+    autolight.Sched.get().add_job(log_scheduled_jobs, 'cron', hour=crontimes, minute=3, args=[log])
     log.info('Scheduled jobs will be logged per this (cron style - hourly) schedule: {}'.format(crontimes))
 
 
@@ -199,7 +202,7 @@ def main():
         Main entry point.
     '''
     log = setup_logging()
-    sched = Sched.get()  # snag a Scheduler instance
+    sched = autolight.Sched.get()  # snag a Scheduler instance
     log.info('>>')
     log.info('>>>>>>>>>>>>>>> AutoMaticLight starting <<<<<<<<<<<<<<<<')
     log.info('<<')
@@ -207,12 +210,13 @@ def main():
     log_uptime(log)
     libratoapi = librato_connect()
     heartbeat(libratoapi)
-    sched.add_interval_job(heartbeat, seconds=20, args=[libratoapi])
+    sched.add_job(heartbeat, 'interval', seconds=20, args=[libratoapi])
     schedule_next_cycle(log)
-    sched.add_cron_job(schedule_next_cycle, hour='1,13', args=[log])
+    # sched.add_cron_job(schedule_next_cycle, hour='1,13', args=[log])
+    sched.add_job(schedule_next_cycle, 'cron', hour='1,13', args=[log])
     log.info('Sunrise/Sunset calculation will run at 1:00AM and 1:00PM')
-    sched.add_interval_job(log_inet_address, hours=24, args=[log])
-    sched.add_interval_job(log_uptime, hours=24, args=[log])
+    sched.add_job(log_inet_address, 'interval', hours=24, args=[log])
+    sched.add_job(log_uptime, 'interval', hours=24, args=[log])
     display_scheduled_jobs(log)
     set_current_state(log)
     return log

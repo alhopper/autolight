@@ -1,3 +1,12 @@
 
  nohup ./securitylight.py >/dev/null 2>&1 &
 
+ # to setup for systemd 
+
+ cp systemd/autolight.service /etc/systemd/system/autolight.service
+
+ # issue the following commands
+
+ sudo systemctl enable autolight.service
+ sudo systemctl start autolight.service
+ sudo systemctl status autolight.service
