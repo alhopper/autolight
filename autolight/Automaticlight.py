@@ -70,7 +70,7 @@ def get_hostname():
     return result.communicate()[0].replace(b'\n',b'').decode()
 
 
-def heartbeat(libratoapi):
+def heartbeat(libratoapi, log):
     '''
         We log the instantaneous load level just to get a "heart-beat" that
         changes.  This allows us to quickly eyeball the librato "activity" plot and verify
@@ -79,8 +79,8 @@ def heartbeat(libratoapi):
     '''
     loadlevel = get_load_level()
     hostname = get_hostname()
-    print('loadlevel:', loadlevel)
-    print('hostname:', hostname)
+    # print('loadlevel:', loadlevel)
+    # print('hostname:', hostname)
     try:
         libratoapi.submit(hostname, float(loadlevel), description=hostname)
     except Exception as e:
@@ -107,8 +107,9 @@ def call_turn_on_ssr(log):
         Turn on the LedStrip by calling colorfill.py and run it in the background
     '''
     log.info('Turn ON LedStrip')
-    os.system('sudo  chmod o+rw /dev/ttyACM0')
-    os.system('sudo -b nohup /home/al/bin/colorfill.py >/dev/null 2>&1 ')
+    # os.system('sudo  chmod o+rw /dev/ttyACM0')
+    # os.system('sudo -b nohup /home/al/bin/colorfill.py >/dev/null 2>&1 ')
+    os.system('/home/al/bin/ws_set_brightness_one.py')
 
 
 def call_turn_off_ssr(log):
@@ -116,8 +117,8 @@ def call_turn_off_ssr(log):
         Turn off the Led Strip
     '''
     log.info('Turn Off LedStrip')
-    os.system('sudo  chmod o+rw /dev/ttyACM0')
-    os.system('/home/al/bin/turnoffledstrip.sh')
+    # os.system('sudo  chmod o+rw /dev/ttyACM0')
+    os.system('/home/al/bin/ws_set_brightness_zero.py')
 
 
 def set_current_state(log):
@@ -209,8 +210,8 @@ def main():
     log_inet_address(log)
     log_uptime(log)
     libratoapi = librato_connect()
-    heartbeat(libratoapi)
-    sched.add_job(heartbeat, 'interval', seconds=20, args=[libratoapi])
+    heartbeat(libratoapi, log)
+    sched.add_job(heartbeat, 'interval', seconds=20, args=[libratoapi, log])
     schedule_next_cycle(log)
     # sched.add_cron_job(schedule_next_cycle, hour='1,13', args=[log])
     sched.add_job(schedule_next_cycle, 'cron', hour='1,13', args=[log])
