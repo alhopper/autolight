@@ -5,7 +5,7 @@ from bibliopixel.drivers.serial import  *
 from bibliopixel import LEDStrip
 
 #init driver with the type and count of LEDs you're using
-driver = Serial(ledtype=LEDTYPE.WS2812B, num=146)
+driver = Serial(num=76, ledtype=LEDTYPE.LPD8806)
 
 #init controller
 led = LEDStrip(driver)
