@@ -77,8 +77,6 @@ def heartbeat(libratoapi, log):
     '''
     loadlevel = get_load_level()
     hostname = get_hostname()
-    # print('loadlevel:', loadlevel)
-    # print('hostname:', hostname)
     try:
         libratoapi.submit(hostname, float(loadlevel), description=hostname)
     except Exception as e:
@@ -105,8 +103,6 @@ def call_turn_on_ssr(log):
         Turn on the LedStrip by calling colorfill.py and run it in the background
     '''
     log.info('Turn ON LedStrip')
-    # os.system('sudo  chmod o+rw /dev/ttyACM0')
-    # os.system('sudo -b nohup /home/al/bin/colorfill.py >/dev/null 2>&1 ')
     os.system('/home/al/bin/ws_set_brightness_one.py')
 
 
@@ -115,7 +111,6 @@ def call_turn_off_ssr(log):
         Turn off the Led Strip
     '''
     log.info('Turn Off LedStrip')
-    # os.system('sudo  chmod o+rw /dev/ttyACM0')
     os.system('/home/al/bin/ws_set_brightness_zero.py')
 
 
